@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Admin {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  sessions     AdminSession[]
+}
+
+model AdminSession {
+  id        String   @id
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+}
+
+// Uma noite de karaoke. status: REGISTRATION -> VOTING -> CLOSED
+model Night {
+  id           Int           @id @default(autoincrement())
+  date         String // AAAA-MM-DD (data de abertura)
+  status       String        @default("REGISTRATION")
+  currentId    Int? // atuação "a cantar agora"
+  votingEndsAt DateTime? // fecho automático da votação (opcional)
+  createdAt    DateTime      @default(now())
+  performances Performance[]
+  votes        Vote[]
+}
+
+// Concorrente identificado pelo telefone (agrupa a classificação mensal)
+model Contestant {
+  id           Int           @id @default(autoincrement())
+  phone        String        @unique
+  name         String
+  age          Int
+  createdAt    DateTime      @default(now())
+  performances Performance[]
+}
+
+// status: QUEUED | DONE | SKIPPED
+model Performance {
+  id           Int        @id @default(autoincrement())
+  nightId      Int
+  night        Night      @relation(fields: [nightId], references: [id], onDelete: Cascade)
+  contestantId Int
+  contestant   Contestant @relation(fields: [contestantId], references: [id])
+  name         String // nome usado nesta noite
+  song         String // "Artista – Música", texto livre
+  notes        String?
+  position     Int
+  status       String     @default("QUEUED")
+  consentAt    DateTime
+  createdAt    DateTime   @default(now())
+  votes        Vote[]
+  // preenchidos ao fechar a votação
+  rank         Int?
+  points       Int        @default(0)
+  voteCount    Int        @default(0)
+
+  @@unique([nightId, contestantId])
+  @@unique([nightId, position])
+}
+
+// voterType: PUBLIC (futuro: JURY, com weight diferente)
+model Vote {
+  id            Int         @id @default(autoincrement())
+  nightId       Int
+  night         Night       @relation(fields: [nightId], references: [id], onDelete: Cascade)
+  performanceId Int
+  performance   Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  voterType     String      @default("PUBLIC")
+  weight        Int         @default(1)
+  deviceId      String
+  ip            String
+  createdAt     DateTime    @default(now())
+
+  @@unique([nightId, deviceId])
+  @@index([nightId, ip])
+}
+
+// Branding (linha única, id = 1)
+model Settings {
+  id        Int      @id @default(1)
+  brandName String   @default("Karaoke")
+  logoMime  String?
+  logo      Bytes?
+  menuEnabled Boolean @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+// Menu do estabelecimento (bebidas, comida, ...)
+model MenuCategory {
+  id       Int        @id @default(autoincrement())
+  name     String
+  position Int
+  items    MenuItem[]
+}
+
+model MenuItem {
+  id          Int          @id @default(autoincrement())
+  categoryId  Int
+  category    MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  priceCents  Int
+  available   Boolean      @default(true)
+  position    Int
+}
