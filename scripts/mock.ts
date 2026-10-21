@@ -2,11 +2,11 @@
  * Simula uma noite completa contra a app a correr (inscrições, fila, votos, fecho),
  * usando a API, por isso o telão e os telemóveis atualizam-se em tempo real.
  *
- *   npm run mock                       # noite completa ao ritmo de "espetáculo"
- *   npm run mock -- --fast             # sem pausas
- *   npm run mock -- --stop-at voting   # deixa a votação aberta (para votares tu)
- *   npm run mock -- --timer 5          # votação temporizada (fecha sozinha)
- *   npm run mock -- --help
+ *   bun run mock                       # noite completa ao ritmo de "espetáculo"
+ *   bun run mock --fast             # sem pausas
+ *   bun run mock --stop-at voting   # deixa a votação aberta (para votares tu)
+ *   bun run mock --timer 5          # votação temporizada (fecha sozinha)
+ *   bun run mock --help
  *
  * Os concorrentes de teste usam telefones 9100000NN (o mesmo número volta a ser
  * usado entre noites, o que também alimenta a classificação mensal).
@@ -72,7 +72,7 @@ async function api(path: string, body?: unknown, opts: { admin?: boolean; ip?: s
       "Content-Type": "application/json",
       Origin: base, // a app recusa pedidos de outras origens
       ...(opts.admin && adminCookie ? { Cookie: adminCookie } : {}),
-      // Cada "pessoa" do público com um IP diferente (só funciona sem nginx, ex.: npm run dev)
+      // Cada "pessoa" do público com um IP diferente (só funciona sem nginx, ex.: bun run dev)
       ...(opts.ip ? { "X-Real-IP": opts.ip } : {}),
     },
     body: body === undefined ? undefined : JSON.stringify(body),

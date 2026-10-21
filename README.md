@@ -5,16 +5,16 @@ Plataforma interna de registo e votação de karaoke (Next.js + TypeScript + Pri
 ## Instalação (uma vez, com internet)
 
 ```bash
-npm install
+bun install
 cp .env.example .env      # editar ADMIN_USERNAME / ADMIN_PASSWORD
-npm run setup             # cria a base de dados e o admin inicial
-npm run build
+bun run setup             # cria a base de dados e o admin inicial
+bun run build
 ```
 
 ## Arrancar
 
 ```bash
-npm start                 # escuta só em 127.0.0.1:3000 — o acesso é pelo nginx
+bun run start             # escuta só em 127.0.0.1:3000 — o acesso é pelo nginx
 ```
 
 O acesso é feito pelo nginx (ver `deploy/nginx.conf`), que:
@@ -48,7 +48,7 @@ O domínio interno (ex.: `karaoke.local`) tem de resolver para o IP fixo do PC n
 | Variável          | Descrição                                                         |
 | ----------------- | ----------------------------------------------------------------- |
 | `DATABASE_URL`    | Ficheiro SQLite (backup = copiar este ficheiro)                   |
-| `ADMIN_USERNAME`  | Admin inicial criado por `npm run db:seed`                        |
+| `ADMIN_USERNAME`  | Admin inicial criado por `bun run db:seed`                        |
 | `ADMIN_PASSWORD`  | Password do admin inicial                                         |
 | `ONE_VOTE_PER_IP` | `true` (padrão) também limita a 1 voto por IP                     |
 | `PUBLIC_URL`      | URL usado nos QR (ex.: `http://karaoke.local`)                    |
@@ -58,10 +58,10 @@ O domínio interno (ex.: `karaoke.local`) tem de resolver para o IP fixo do PC n
 ## Testes e CI
 
 ```bash
-npm test          # testes unitários (pontuação, telefones, preços, IPs, datas)
-npm run test:api  # testes de API: precisam de `npm run build` antes
-npm run test:all  # build + todos os testes
-npm run typecheck
+bun run test      # testes unitários (não confundir com `bun test`, o runner do bun) (pontuação, telefones, preços, IPs, datas)
+bun run test:api  # testes de API: precisam de `bun run build` antes
+bun run test:all  # build + todos os testes
+bun run typecheck
 ```
 
 Os testes de API arrancam a app compilada numa base de dados SQLite temporária

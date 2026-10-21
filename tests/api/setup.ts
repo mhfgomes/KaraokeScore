@@ -8,11 +8,11 @@ const PORT = 3199;
 export const ADMIN = { username: "teste", password: "password-de-teste" };
 
 /**
- * Arranca a app compilada (`npm run build`) numa BD SQLite temporária — nunca
+ * Arranca a app compilada (`bun run build`) numa BD SQLite temporária — nunca
  * toca na base de dados do dia a dia.
  */
 export default async function setup(project: TestProject) {
-  if (!existsSync(".next/BUILD_ID")) throw new Error("Corre `npm run build` antes dos testes de API.");
+  if (!existsSync(".next/BUILD_ID")) throw new Error("Corre `bun run build` antes dos testes de API.");
 
   const dir = mkdtempSync(path.join(os.tmpdir(), "karaoke-test-"));
   const dbPath = path.join(dir, "test.db");
@@ -25,10 +25,10 @@ export default async function setup(project: TestProject) {
     PUBLIC_URL: "http://karaoke.test",
     NODE_ENV: "production" as const,
   };
-  execFileSync("npx", ["prisma", "migrate", "deploy"], { env, stdio: "ignore" });
-  execFileSync("npx", ["tsx", "prisma/seed.ts"], { env, stdio: "ignore" });
+  execFileSync("bunx", ["prisma", "migrate", "deploy"], { env, stdio: "ignore" });
+  execFileSync("bunx", ["tsx", "prisma/seed.ts"], { env, stdio: "ignore" });
 
-  const server: ChildProcess = spawn("npx", ["next", "start", "-H", "127.0.0.1", "-p", String(PORT)], {
+  const server: ChildProcess = spawn("bunx", ["next", "start", "-H", "127.0.0.1", "-p", String(PORT)], {
     env,
     stdio: ["ignore", "ignore", "inherit"],
     detached: true,
@@ -48,7 +48,7 @@ export default async function setup(project: TestProject) {
   project.provide("admin", ADMIN);
 
   return () => {
-    // Termina o grupo de processos (npx + next)
+    // Termina o grupo de processos (bunx + next)
     try {
       process.kill(-server.pid!, "SIGTERM");
     } catch {}
