@@ -1,15 +1,8 @@
 import { prisma } from "@/lib/db";
 import { notifyUpdate } from "@/lib/events";
 import { fail, handle } from "@/lib/http";
+import { normalizePhone } from "@/lib/phone";
 
-function normalizePhone(raw: string) {
-  let phone = raw.replace(/[\s\-().]/g, "");
-  if (phone.startsWith("00")) phone = "+" + phone.slice(2);
-  if (phone.startsWith("+351")) phone = phone.slice(4);
-  if (/^9\d{8}$|^2\d{8}$/.test(phone)) return phone;
-  if (/^\+\d{8,15}$/.test(phone)) return phone;
-  return null;
-}
 
 const text = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 

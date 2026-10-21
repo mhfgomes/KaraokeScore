@@ -55,6 +55,24 @@ O domínio interno (ex.: `karaoke.local`) tem de resolver para o IP fixo do PC n
 | `PORT`            | Porta (padrão 3000)                                               |
 | `ALLOW_EXTERNAL`  | `true` desativa o bloqueio de rede interna (não recomendado)      |
 
+## Testes e CI
+
+```bash
+npm test          # testes unitários (pontuação, telefones, preços, IPs, datas)
+npm run test:api  # testes de API: precisam de `npm run build` antes
+npm run test:all  # build + todos os testes
+npm run typecheck
+```
+
+Os testes de API arrancam a app compilada numa base de dados SQLite temporária
+(nunca tocam em `prisma/karaoke.db`) e percorrem uma noite completa: inscrições,
+fila, votação, empates, pontos, votação temporizada, CSRF e acesso só pela rede
+interna.
+
+O GitHub Actions (`.github/workflows/ci.yml`) corre lint, tipos, testes
+unitários, build e testes de API em cada push e pull request. O Dependabot
+propõe atualizações semanais das dependências.
+
 ## Licença
 
 [MIT](LICENSE) © 2026 Mário Gomes
