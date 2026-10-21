@@ -54,3 +54,7 @@ O domínio interno (ex.: `karaoke.local`) tem de resolver para o IP fixo do PC n
 | `PUBLIC_URL`      | URL usado nos QR (ex.: `http://karaoke.local`)                    |
 | `PORT`            | Porta (padrão 3000)                                               |
 | `ALLOW_EXTERNAL`  | `true` desativa o bloqueio de rede interna (não recomendado)      |
+
+## Licença
+
+[MIT](LICENSE) © 2026 Mário Gomes
