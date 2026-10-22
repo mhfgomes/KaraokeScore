@@ -43,3 +43,19 @@ jobs:
       # Arrancam a app compilada numa BD SQLite temporária
       - name: Testes de API
         run: bun run test:api
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      # Só confirma que a imagem compila nas duas arquiteturas (não publica)
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

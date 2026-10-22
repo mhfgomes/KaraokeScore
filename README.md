@@ -55,6 +55,38 @@ O domínio interno (ex.: `karaoke.local`) tem de resolver para o IP fixo do PC n
 | `PORT`            | Porta (padrão 3000)                                               |
 | `ALLOW_EXTERNAL`  | `true` desativa o bloqueio de rede interna (não recomendado)      |
 
+## Docker
+
+Imagem para `linux/amd64` e `linux/arm64` (PC normal ou Raspberry Pi 4/5).
+A base de dados fica no volume `karaoke-data`. No arranque, o contentor aplica as
+migrações e cria o admin inicial (`ADMIN_USERNAME`/`ADMIN_PASSWORD`) se ainda não
+existir nenhum.
+
+```bash
+cp .env.example .env   # define ADMIN_PASSWORD e PUBLIC_URL
+
+# Sem nginx: app diretamente na porta 3000 (APP_PORT para mudar)
+docker compose up -d --build
+
+# Com nginx: só o nginx fica exposto, na porta 80 (HTTP_PORT para mudar)
+docker compose -f compose.nginx.yaml up -d --build
+
+# Atualizar (os dados mantêm-se)
+git pull && docker compose up -d --build
+```
+
+- **`PUBLIC_URL` é obrigatório** em Docker: dentro do contentor a app não sabe o
+  IP do PC na rede, por isso os QR codes usariam um endereço errado.
+- Nas duas variantes o IP do cliente vem da ligação e não de um cabeçalho que o
+  cliente consiga falsificar: no compose sem nginx há um mini proxy interno
+  (`docker/edge.mjs`) que faz o mesmo que o nginx.
+- No **Docker Desktop (macOS/Windows)** todos os pedidos chegam com o mesmo IP
+  interno. Aí convém `ONE_VOTE_PER_IP="false"`, senão só passa um voto por noite.
+  Em Linux (incluindo o Raspberry Pi) o IP real é preservado.
+- Backup: `docker compose cp app:/data/karaoke.db ./backup.db`.
+- Imagem para as duas arquiteturas (por exemplo, para publicar num registo):
+  `docker buildx build --platform linux/amd64,linux/arm64 -t karaoke-vote .`
+
 ## Testes e CI
 
 ```bash
@@ -70,7 +102,8 @@ fila, votação, empates, pontos, votação temporizada, CSRF e acesso só pela 
 interna.
 
 O GitHub Actions (`.github/workflows/ci.yml`) corre lint, tipos, testes
-unitários, build e testes de API em cada push e pull request. O Dependabot
+unitários, build e testes de API em cada push e pull request, e confirma que a
+imagem Docker compila para amd64 e arm64. O Dependabot
 propõe atualizações semanais das dependências.
 
 ## Licença

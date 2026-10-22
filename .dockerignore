@@ -1,0 +1,16 @@
+.git
+.github
+.next
+node_modules
+src/generated
+coverage
+tests
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.log
+.env*
+!.env.example
+Dockerfile
+compose*.yaml
