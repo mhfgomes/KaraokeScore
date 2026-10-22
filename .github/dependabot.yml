@@ -17,6 +17,12 @@ updates:
       # Tipos do Node acompanham o Node usado (24 LTS, ver .nvmrc)
       - dependency-name: "@types/node"
         update-types: [version-update:semver-major]
+      # typescript-eslint só suporta TS < 6.1
+      - dependency-name: "typescript"
+        update-types: [version-update:semver-major]
+      # Os plugins do eslint-config-next só suportam ESLint 9
+      - dependency-name: "eslint"
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
