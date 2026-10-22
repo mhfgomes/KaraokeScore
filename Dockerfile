@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Imagem multi-arquitetura (linux/amd64 e linux/arm64):
-#   docker buildx build --platform linux/amd64,linux/arm64 -t karaoke-vote .
+#   docker buildx build --platform linux/amd64,linux/arm64 -t karaokescore .
 
 ARG NODE_VERSION=24
 ARG BUN_VERSION=1.4.3

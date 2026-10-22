@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Karaoke Vote",
+  title: "KaraokeScore",
   description: "Registo e votação de Karaoke",
 };
 

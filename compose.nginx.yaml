@@ -1,9 +1,9 @@
-# Karaoke Vote com nginx à frente (só o nginx fica exposto, na porta 80).
+# KaraokeScore com nginx à frente (só o nginx fica exposto, na porta 80).
 #   docker compose -f compose.nginx.yaml up -d --build
 services:
   app:
     build: .
-    image: karaoke-vote
+    image: karaokescore
     restart: unless-stopped
     env_file: .env
     environment:

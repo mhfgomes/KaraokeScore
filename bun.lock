@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "karaoke-vote",
+      "name": "karaokescore",
       "dependencies": {
         "@prisma/adapter-better-sqlite3": "7.10.1",
         "@prisma/client": "7.10.1",

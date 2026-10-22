@@ -1,4 +1,4 @@
-# Karaoke Vote
+# KaraokeScore
 
 Plataforma interna de registo e votação de karaoke (Next.js + TypeScript + Prisma/SQLite + SSE).
 
@@ -84,8 +84,13 @@ git pull && docker compose up -d --build
   interno. Aí convém `ONE_VOTE_PER_IP="false"`, senão só passa um voto por noite.
   Em Linux (incluindo o Raspberry Pi) o IP real é preservado.
 - Backup: `docker compose cp app:/data/karaoke.db ./backup.db`.
+- Imagens no Docker Hub (amd64 + arm64, cada uma compilada nativamente):
+  tag `v1.2.3` → `:v1.2.3` e `:latest` (`release.yml`); todas as noites →
+  `:nightly` (`nightly.yml`). Ambas correm o CI completo antes de publicar.
+  Para usar a imagem publicada, troca `build: .` por
+  `image: <utilizador>/karaokescore:latest` no compose.
 - Imagem para as duas arquiteturas (por exemplo, para publicar num registo):
-  `docker buildx build --platform linux/amd64,linux/arm64 -t karaoke-vote .`
+  `docker buildx build --platform linux/amd64,linux/arm64 -t karaokescore .`
 
 ## Testes e CI
 
@@ -102,8 +107,8 @@ fila, votação, empates, pontos, votação temporizada, CSRF e acesso só pela 
 interna.
 
 O GitHub Actions (`.github/workflows/ci.yml`) corre lint, tipos, testes
-unitários, build e testes de API em cada push e pull request, e confirma que a
-imagem Docker compila para amd64 e arm64. O Dependabot
+unitários, build e testes de API em cada push e pull request, e testa a
+imagem Docker (arranque, migrações, login). O Dependabot
 propõe atualizações semanais das dependências.
 
 ## Licença
