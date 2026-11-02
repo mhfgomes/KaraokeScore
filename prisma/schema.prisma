@@ -29,6 +29,7 @@ model Night {
   status       String        @default("REGISTRATION")
   currentId    Int? // atuação "a cantar agora"
   votingEndsAt DateTime? // fecho automático da votação (opcional)
+  maxSignups   Int? // máximo de inscrições (null = sem limite)
   createdAt    DateTime      @default(now())
   performances Performance[]
   votes        Vote[]

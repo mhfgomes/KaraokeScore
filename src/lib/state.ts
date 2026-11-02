@@ -60,6 +60,8 @@ export async function getPublicState(deviceId?: string) {
       status: night.status,
       currentId: night.currentId,
       votingEndsAt: night.votingEndsAt?.toISOString() ?? null,
+      maxSignups: night.maxSignups,
+      signups: active.length,
     },
     queue,
     voting,

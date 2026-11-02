@@ -26,6 +26,10 @@ export const POST = handle(async (request: Request) => {
     const night = await tx.night.findFirst({ where: { status: { not: "CLOSED" } }, orderBy: { id: "desc" } });
     if (!night) fail(409, "Não há nenhuma noite aberta.");
     if (night.status !== "REGISTRATION") fail(409, "As inscrições desta noite já fecharam.");
+    if (night.maxSignups != null) {
+      const count = await tx.performance.count({ where: { nightId: night.id, status: { not: "SKIPPED" } } });
+      if (count >= night.maxSignups) fail(409, "As inscrições desta noite estão esgotadas.");
+    }
 
     const existing = await tx.contestant.findUnique({ where: { phone } });
     if (existing) {

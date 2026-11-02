@@ -30,7 +30,7 @@ type AdminPerformance = {
   rank: number | null;
   points: number;
 };
-type AdminNight = { id: number; date: string; status: keyof typeof STATUS_LABEL; currentId: number | null; votingEndsAt: string | null };
+type AdminNight = { id: number; date: string; status: keyof typeof STATUS_LABEL; currentId: number | null; votingEndsAt: string | null; maxSignups: number | null };
 
 export default function AdminPage() {
   const [admin, setAdmin] = useState<{ username: string } | null | undefined>(undefined);
@@ -100,6 +100,7 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
   const [perfs, setPerfs] = useState<AdminPerformance[]>([]);
   const [busy, setBusy] = useState(false);
   const [duration, setDuration] = useState("15");
+  const [maxInput, setMaxInput] = useState("");
   const latest = useLatest();
 
   const load = useCallback(
@@ -110,6 +111,7 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
           if (d.status === 401) return onLogout();
           if (d.status) return toast.error("Não foi possível carregar a noite.");
           setNight(d.night);
+          setMaxInput(d.night?.maxSignups ? String(d.night.maxSignups) : "");
           setPerfs(d.performances);
         },
       ).catch(() => toast.error("Sem ligação ao servidor.")),
@@ -183,7 +185,8 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
             </div>
             {night && (
               <p className="text-sm text-muted-foreground">
-                {perfs.filter((p) => p.status !== "SKIPPED").length} concorrentes · {totalVotes} votos
+                {perfs.filter((p) => p.status !== "SKIPPED").length}
+                {night.maxSignups ? ` / ${night.maxSignups}` : ""} concorrentes · {totalVotes} votos
               </p>
             )}
           </div>
@@ -191,6 +194,28 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
             {!active && <Button disabled={busy} onClick={() => nightAction("open")}>Abrir nova noite</Button>}
             {night?.status === "REGISTRATION" && (
               <>
+                <form
+                  className="flex items-center gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    nightAction("setMaxSignups", { max: maxInput.trim() || null });
+                  }}
+                >
+                  <Label htmlFor="max-signups" className="whitespace-nowrap">Máx. inscrições</Label>
+                  <Input
+                    id="max-signups"
+                    type="number"
+                    min={1}
+                    max={999}
+                    placeholder="Sem limite"
+                    className="w-28"
+                    value={maxInput}
+                    onChange={(e) => setMaxInput(e.target.value)}
+                  />
+                  <Button type="submit" variant="outline" disabled={busy || maxInput === (night.maxSignups ? String(night.maxSignups) : "")}>
+                    Guardar
+                  </Button>
+                </form>
                 <Button variant="outline" disabled={busy} onClick={() => queueAction("next")}>
                   <SkipForward /> Próximo a cantar
                 </Button>

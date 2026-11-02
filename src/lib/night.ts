@@ -195,3 +195,11 @@ export async function monthlyRanking(month: string) {
     (a, b) => b.points - a.points || b.firsts - a.firsts || b.votes - a.votes,
   );
 }
+
+/** Define o máximo de inscrições da noite ativa (null = sem limite). */
+export async function setMaxSignups(max: number | null) {
+  if (max !== null && (!Number.isInteger(max) || max < 1 || max > 999)) fail(400, "Máximo de inscrições inválido.");
+  const night = await requireActiveNight();
+  await prisma.night.update({ where: { id: night.id }, data: { maxSignups: max } });
+  notifyUpdate();
+}
