@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { KeyRound, LogOut, Mic, UtensilsCrossed, Monitor, SkipForward, Timer, Trophy, UserX, Undo2 } from "lucide-react";
+import { KeyRound, Minus, Plus, LogOut, Mic, UtensilsCrossed, Monitor, SkipForward, Timer, Trophy, UserX, Undo2 } from "lucide-react";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { Countdown } from "@/components/Countdown";
 import { postJson, useLatest, useLiveState } from "@/components/useLiveState";
@@ -202,16 +202,37 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
                   }}
                 >
                   <Label htmlFor="max-signups" className="whitespace-nowrap">Máx. inscrições</Label>
-                  <Input
-                    id="max-signups"
-                    type="number"
-                    min={1}
-                    max={999}
-                    placeholder="Sem limite"
-                    className="w-28"
-                    value={maxInput}
-                    onChange={(e) => setMaxInput(e.target.value)}
-                  />
+                  <div className="flex items-center rounded-md border">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Diminuir"
+                      disabled={!maxInput}
+                      onClick={() => setMaxInput((v) => (Number(v) > 1 ? String(Number(v) - 1) : ""))}
+                    >
+                      <Minus />
+                    </Button>
+                    <Input
+                      id="max-signups"
+                      inputMode="numeric"
+                      placeholder="∞"
+                      title="Vazio = sem limite"
+                      className="w-14 border-0 text-center text-lg font-semibold shadow-none focus-visible:ring-0"
+                      value={maxInput}
+                      onChange={(e) => setMaxInput(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Aumentar"
+                      disabled={Number(maxInput) >= 999}
+                      onClick={() => setMaxInput((v) => String(Math.max(Number(v) || Math.max(perfs.length, 0), 0) + 1))}
+                    >
+                      <Plus />
+                    </Button>
+                  </div>
                   <Button type="submit" variant="outline" disabled={busy || maxInput === (night.maxSignups ? String(night.maxSignups) : "")}>
                     Guardar
                   </Button>
