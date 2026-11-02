@@ -56,6 +56,15 @@ export default function RegisterPage() {
     );
   }
 
+  const { maxSignups, signups } = state.night;
+  if (done === null && maxSignups != null && signups >= maxSignups) {
+    return (
+      <Shell title="Inscrição">
+        <Notice>As inscrições desta noite estão esgotadas ({maxSignups} concorrentes).</Notice>
+      </Shell>
+    );
+  }
+
   if (done !== null) {
     return (
       <Shell title="Inscrição feita! 🎉">

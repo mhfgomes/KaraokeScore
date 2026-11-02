@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { fail, handle, requireAdmin } from "@/lib/http";
-import { closeVoting, getCurrentNight, openNight, startVoting } from "@/lib/night";
+import { closeVoting, setMaxSignups, getCurrentNight, openNight, startVoting } from "@/lib/night";
 
 // Detalhe completo da noite atual (inclui telefone e idade — só admin)
 export const GET = handle(async () => {
@@ -32,9 +32,10 @@ export const GET = handle(async () => {
 
 export const POST = handle(async (request: Request) => {
   await requireAdmin();
-  const { action, minutes } = await request.json().catch(() => ({}));
+  const { action, minutes, max } = await request.json().catch(() => ({}));
   if (action === "open") await openNight();
   else if (action === "startVoting") await startVoting(minutes ? Number(minutes) : null);
   else if (action === "closeVoting") await closeVoting();
+  else if (action === "setMaxSignups") await setMaxSignups(max == null || max === "" ? null : Number(max));
   else fail(400, "Ação inválida.");
 });

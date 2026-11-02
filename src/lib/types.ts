@@ -6,6 +6,9 @@ export type PublicState = {
   night: { id: number; date: string; status: "REGISTRATION" | "VOTING" | "CLOSED"; currentId: number | null;
     /** ISO; fecho automático da votação, se temporizada */
     votingEndsAt: string | null;
+    /** Máximo de inscrições (null = sem limite) e inscrições ativas */
+    maxSignups: number | null;
+    signups: number;
   } | null;
   queue: { id: number; position: number; name: string; song: string; status: string }[];
   voting: {
