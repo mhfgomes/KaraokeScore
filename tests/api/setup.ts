@@ -22,6 +22,7 @@ export default async function setup(project: TestProject) {
     ADMIN_USERNAME: ADMIN.username,
     ADMIN_PASSWORD: ADMIN.password,
     ONE_VOTE_PER_IP: "true",
+    ALLOW_EXTERNAL: "false",
     PUBLIC_URL: "http://karaoke.test",
     NODE_ENV: "production" as const,
   };

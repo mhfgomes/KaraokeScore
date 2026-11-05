@@ -18,7 +18,6 @@ bun run start             # escuta só em 127.0.0.1:3000 — o acesso é pelo ng
 ```
 
 O acesso é feito pelo nginx (ver `deploy/nginx.conf`), que:
-- só aceita a rede interna (IPs privados);
 - envia o IP real do cliente em `X-Real-IP` (usado no limite de 1 voto por IP);
 - desliga o buffering em `/api/events` (SSE).
 
@@ -53,7 +52,11 @@ O domínio interno (ex.: `karaoke.local`) tem de resolver para o IP fixo do PC n
 | `ONE_VOTE_PER_IP` | `true` (padrão) também limita a 1 voto por IP                     |
 | `PUBLIC_URL`      | URL usado nos QR (ex.: `http://karaoke.local`)                    |
 | `PORT`            | Porta (padrão 3000)                                               |
-| `ALLOW_EXTERNAL`  | `true` desativa o bloqueio de rede interna (não recomendado)      |
+| `ALLOW_EXTERNAL`  | `true` (padrão) permite acesso externo; `false` restringe a IPs privados |
+
+O bloqueio de rede é controlado pela app, também quando existe nginx. Para ativá-lo,
+definir `ALLOW_EXTERNAL="false"` no `.env` e reiniciar a app (em Docker, recriar
+o contentor com `docker compose up -d`). Para permitir acesso externo, usar `true`.
 
 ## Docker
 

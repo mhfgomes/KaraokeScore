@@ -16,8 +16,8 @@ function isSameOrigin(request: NextRequest) {
 }
 
 export function proxy(request: NextRequest) {
-  // Segunda barreira (a primeira é o nginx): só a rede interna tem acesso.
-  if (process.env.ALLOW_EXTERNAL !== "true" && !isPrivateIp(getClientIp(request.headers))) {
+  // Restrição opcional à rede interna, controlada por ALLOW_EXTERNAL.
+  if (process.env.ALLOW_EXTERNAL === "false" && !isPrivateIp(getClientIp(request.headers))) {
     return new NextResponse("Acesso apenas na rede interna.", { status: 403 });
   }
   if (!SAFE_METHODS.has(request.method) && !isSameOrigin(request)) {
