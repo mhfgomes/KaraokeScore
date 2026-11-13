@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { PublicState } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { formatVotePercent } from "@/lib/format";
 
 type Result = NonNullable<PublicState["results"]>[number];
 
@@ -28,6 +29,7 @@ type Step = { kind: "intro" } | { kind: "suspense"; rank: number } | { kind: "sh
  * cada lugar (mais longa para o vencedor) e confetti no fim.
  */
 export function ResultsReveal({ results }: { results: Result[] }) {
+  const totalVotes = results.reduce((total, result) => total + result.votes, 0);
   const podium = useMemo(() => podiumOf(results), [results]);
   // Lugares por ordem de revelação (ex.: empate 1,1,3 → 3 e depois 1)
   const ranks = useMemo(() => [...new Set(podium.map((r) => r.rank!))].sort((a, b) => b - a), [podium]);
@@ -81,7 +83,7 @@ export function ResultsReveal({ results }: { results: Result[] }) {
       )}
       <div className="w-full space-y-4">
         {revealed.map((r) => (
-          <ResultCard key={r.id} result={r} highlight={r.rank === 1} fresh={step.kind === "show" && r.rank === step.rank} />
+          <ResultCard key={r.id} result={r} totalVotes={totalVotes} highlight={r.rank === 1} fresh={step.kind === "show" && r.rank === step.rank} />
         ))}
       </div>
       {revealed.some((r) => r.rank === 1) && <Confetti />}
@@ -89,7 +91,7 @@ export function ResultsReveal({ results }: { results: Result[] }) {
   );
 }
 
-function ResultCard({ result: r, highlight, fresh }: { result: Result; highlight?: boolean; fresh?: boolean }) {
+function ResultCard({ result: r, totalVotes, highlight, fresh }: { result: Result; totalVotes: number; highlight?: boolean; fresh?: boolean }) {
   return (
     <Card
       className={cn(
@@ -105,7 +107,7 @@ function ResultCard({ result: r, highlight, fresh }: { result: Result; highlight
       </div>
       <div className="text-right">
         <p className="text-4xl font-extrabold text-gold">+{r.points} pts</p>
-        <p className="text-xl text-muted-foreground">{r.votes} votos</p>
+        <p className="text-xl text-muted-foreground">{formatVotePercent(r.votes, totalVotes)} dos votos</p>
       </div>
     </Card>
   );
@@ -113,12 +115,13 @@ function ResultCard({ result: r, highlight, fresh }: { result: Result; highlight
 
 /** Pódio estático (sem animação), do 1.º para o 3.º. */
 export function Podium({ results }: { results: Result[] }) {
+  const totalVotes = results.reduce((total, result) => total + result.votes, 0);
   const podium = podiumOf(results);
   if (podium.length === 0) return <p className="text-4xl text-muted-foreground">Não houve votos nesta noite.</p>;
   return (
     <div className="w-full max-w-5xl space-y-4">
       {podium.map((r) => (
-        <ResultCard key={r.id} result={r} highlight={r.rank === 1} />
+        <ResultCard key={r.id} result={r} totalVotes={totalVotes} highlight={r.rank === 1} />
       ))}
     </div>
   );

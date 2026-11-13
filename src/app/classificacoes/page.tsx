@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Notice, Shell } from "@/components/Shell";
 import { useLiveState } from "@/components/useLiveState";
+import { formatVotePercent } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,6 +25,7 @@ export default function RankingsPage() {
   const [nights, setNights] = useState<{ id: number; date: string }[]>([]);
   const [nightId, setNightId] = useState<string>("");
   const [nightResults, setNightResults] = useState<NightResult[]>([]);
+  const totalVotes = nightResults.reduce((total, result) => total + result.voteCount, 0);
   const [month, setMonth] = useState("");
   const [monthRows, setMonthRows] = useState<MonthRow[]>([]);
   // Meses com noites terminadas, mais o mês atual (vem do servidor), do mais recente para o mais antigo
@@ -103,7 +105,7 @@ export default function RankingsPage() {
                 </SelectContent>
               </Select>
               <Ranking
-                headers={["#", "Concorrente", "Votos", "Pts"]}
+                headers={["#", "Concorrente", "% de votos", "Pts"]}
                 rows={nightResults.map((r) => [
                   r.voteCount > 0 ? `${MEDAL[r.rank ?? 0] ?? ""} ${r.rank}` : "–",
                   <div key="n">
@@ -112,7 +114,7 @@ export default function RankingsPage() {
                       {r.song}
                     </p>
                   </div>,
-                  r.voteCount,
+                  formatVotePercent(r.voteCount, totalVotes),
                   <b key="p" className="text-gold">
                     {r.points}
                   </b>,

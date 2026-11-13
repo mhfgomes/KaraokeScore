@@ -91,10 +91,9 @@ export default function LivePage() {
       title="Votação aberta"
       subtitle={
         <>
-          {voting.total} votos
           {night.votingEndsAt && (
             <>
-              {" · fecha em "}
+              {"Fecha em "}
               <Countdown endsAt={night.votingEndsAt} clockOffset={clockOffset} className="font-extrabold text-foreground" />
             </>
           )}
