@@ -9,6 +9,8 @@ export type PublicState = {
     /** Máximo de inscrições (null = sem limite) e inscrições ativas */
     maxSignups: number | null;
     signups: number;
+    /** Lista de músicas da noite (null = sem lista ou vazia) */
+    songListName: string | null;
   } | null;
   queue: { id: number; position: number; name: string; song: string; status: string }[];
   voting: {

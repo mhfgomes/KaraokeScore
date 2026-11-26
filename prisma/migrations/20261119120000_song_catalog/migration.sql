@@ -1,0 +1,176 @@
+-- CreateTable
+CREATE TABLE "SongList" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "Song" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "listId" INTEGER NOT NULL,
+    "artist" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Song_listId_fkey" FOREIGN KEY ("listId") REFERENCES "SongList" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- RedefineTables
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_Night" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "date" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'REGISTRATION',
+    "currentId" INTEGER,
+    "votingEndsAt" DATETIME,
+    "maxSignups" INTEGER,
+    "songListId" INTEGER,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Night_songListId_fkey" FOREIGN KEY ("songListId") REFERENCES "SongList" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+INSERT INTO "new_Night" ("createdAt", "currentId", "date", "id", "maxSignups", "status", "votingEndsAt") SELECT "createdAt", "currentId", "date", "id", "maxSignups", "status", "votingEndsAt" FROM "Night";
+DROP TABLE "Night";
+ALTER TABLE "new_Night" RENAME TO "Night";
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SongList_name_key" ON "SongList"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Song_listId_key_key" ON "Song"("listId", "key");
+
+
+-- Lista por defeito
+INSERT INTO "SongList" ("id", "name", "isDefault") VALUES (1, 'Lista principal', true);
+
+INSERT INTO "Song" ("listId", "artist", "title", "key") VALUES
+  (1, 'Xutos & Pontapés', 'A Minha Casinha', 'xutos & pontapes|a minha casinha'),
+  (1, 'Xutos & Pontapés', 'Homem do Leme', 'xutos & pontapes|homem do leme'),
+  (1, 'Xutos & Pontapés', 'Não Sou o Único', 'xutos & pontapes|nao sou o unico'),
+  (1, 'D’ZRT', 'Para Mim Tanto Me Faz', 'd’zrt|para mim tanto me faz'),
+  (1, 'António Zambujo', 'Pica do 7', 'antonio zambujo|pica do 7'),
+  (1, 'Rui Veloso', 'Porto Côvo', 'rui veloso|porto covo'),
+  (1, 'Rui Veloso', 'Paixão', 'rui veloso|paixao'),
+  (1, 'Intervalo', 'Perfume', 'intervalo|perfume'),
+  (1, 'Os Azeitonas', 'Anda Comigo Ver os Aviões', 'os azeitonas|anda comigo ver os avioes'),
+  (1, 'Vizinhos', 'Pôr do Sol', 'vizinhos|por do sol'),
+  (1, 'Seu Jorge', 'Amiga da Minha Mulher', 'seu jorge|amiga da minha mulher'),
+  (1, 'António Variações', 'Canção de Engate', 'antonio variacoes|cancao de engate'),
+  (1, 'Carlos Paião', 'Playback', 'carlos paiao|playback'),
+  (1, 'Paulo Gonzo', 'Jardins Proibidos', 'paulo gonzo|jardins proibidos'),
+  (1, 'Miguel Araújo', 'Os Maridos das Outras', 'miguel araujo|os maridos das outras'),
+  (1, 'Salvador Sobral', 'Amar Pelos Dois', 'salvador sobral|amar pelos dois'),
+  (1, 'Ana Moura', 'Desfado', 'ana moura|desfado'),
+  (1, 'Sara Tavares', 'Chamar a Música', 'sara tavares|chamar a musica'),
+  (1, 'Sara Tavares', 'Longe do Mundo', 'sara tavares|longe do mundo'),
+  (1, 'Filipa Azevedo', 'Há Dias Assim', 'filipa azevedo|ha dias assim'),
+  (1, 'Da Vinci', 'Conquistador', 'da vinci|conquistador'),
+  (1, 'Dulce Pontes', 'Canção do Mar', 'dulce pontes|cancao do mar'),
+  (1, 'Doce', 'Amanhã de manhã', 'doce|amanha de manha'),
+  (1, 'Ágata', 'Comunhão de Bens', 'agata|comunhao de bens'),
+  (1, 'Saúl', 'Comi-lhe o Melão', 'saul|comi-lhe o melao'),
+  (1, 'Adelaide Ferreira', 'Papel Principal', 'adelaide ferreira|papel principal'),
+  (1, 'Kara', 'Mal Acostumado', 'kara|mal acostumado'),
+  (1, 'Mónica Sintra', 'Afinal Havia Outra', 'monica sintra|afinal havia outra'),
+  (1, 'Carlos Paião', 'Cinderela', 'carlos paiao|cinderela'),
+  (1, '', 'Ó malhão malhão', '|o malhao malhao'),
+  (1, 'Marco Paulo', 'Eu Tenho Dois Amores', 'marco paulo|eu tenho dois amores'),
+  (1, 'Marco Paulo', 'Sempre Que Brilha o Sol', 'marco paulo|sempre que brilha o sol'),
+  (1, 'Toy', 'Coração Não Tem Idade', 'toy|coracao nao tem idade'),
+  (1, 'Quim Barreiros', 'A Cabritinha', 'quim barreiros|a cabritinha'),
+  (1, 'Quim Barreiros', 'A Garagem da Vizinha', 'quim barreiros|a garagem da vizinha'),
+  (1, 'Quim Barreiros', 'Mestre de Culinária', 'quim barreiros|mestre de culinaria'),
+  (1, 'José Malhoa', 'Baile de Verão', 'jose malhoa|baile de verao'),
+  (1, 'José Malhoa', 'Morena Kuduro', 'jose malhoa|morena kuduro'),
+  (1, 'José Malhoa', 'Ai Mexe Mexe Que É Bom', 'jose malhoa|ai mexe mexe que e bom'),
+  (1, 'música popular portuguesa', 'Apita o Comboio', 'musica popular portuguesa|apita o comboio'),
+  (1, 'Ágata', 'Perfume de Mulher', 'agata|perfume de mulher'),
+  (1, 'Carolina Deslandes', 'A Vida Toda', 'carolina deslandes|a vida toda'),
+  (1, 'Calema', 'Perfume', 'calema|perfume'),
+  (1, 'Fernando Daniel', 'Tal Como Sou', 'fernando daniel|tal como sou'),
+  (1, 'Matias Damásio', 'Como Antes', 'matias damasio|como antes'),
+  (1, 'Dina', 'Amor de Água Fresca', 'dina|amor de agua fresca'),
+  (1, 'Beto', 'Memórias Esquecidas', 'beto|memorias esquecidas'),
+  (1, 'Tony Carreira', 'Ai Destino', 'tony carreira|ai destino'),
+  (1, 'Tony Carreira', 'Sonhos de Menino', 'tony carreira|sonhos de menino'),
+  (1, 'Tony Carreira', 'Sonhador, Sonhador', 'tony carreira|sonhador, sonhador'),
+  (1, 'Tony Carreira', 'Este Sabor a Ti', 'tony carreira|este sabor a ti'),
+  (1, 'Bandalusa', 'Marian Tcha Tcha Tcha', 'bandalusa|marian tcha tcha tcha'),
+  (1, 'Bandalusa', 'Se A Casa Cair', 'bandalusa|se a casa cair'),
+  (1, 'Emanuel', 'Baby És Uma Bomba', 'emanuel|baby es uma bomba'),
+  (1, 'Emanuel', 'Hino À Alegria', 'emanuel|hino a alegria'),
+  (1, 'Emanuel', 'Ó Senhor Guarda', 'emanuel|o senhor guarda'),
+  (1, 'Império dos Sentados', 'Longe de Ti', 'imperio dos sentados|longe de ti'),
+  (1, 'Michel Teló', 'Ai Se Eu Te Pego', 'michel telo|ai se eu te pego'),
+  (1, 'Gusttavo Lima', 'Tchê Tcherere Tchê Tchê', 'gusttavo lima|tche tcherere tche tche'),
+  (1, 'Munhoz e Mariano', 'Camaro Amarelo', 'munhoz e mariano|camaro amarelo'),
+  (1, 'Cristiano Araújo', 'Maus Bocados', 'cristiano araujo|maus bocados'),
+  (1, 'Enrique Iglesias', 'Bailando', 'enrique iglesias|bailando'),
+  (1, 'Anitta', 'Show das Poderosas', 'anitta|show das poderosas'),
+  (1, 'Luis Fonsi e Daddy Yankee', 'Despacito', 'luis fonsi e daddy yankee|despacito'),
+  (1, 'Ricky Martin', 'Livin'' la Vida Loca', 'ricky martin|livin'' la vida loca'),
+  (1, 'Los Del Río', 'Macarena', 'los del rio|macarena'),
+  (1, 'Shakira', 'Waka Waka', 'shakira|waka waka'),
+  (1, 'Marc Anthony', 'Vivir Mi Vida', 'marc anthony|vivir mi vida'),
+  (1, 'Juanes', 'La Camisa Negra', 'juanes|la camisa negra'),
+  (1, 'Gipsy Kings', 'Bamboleo', 'gipsy kings|bamboleo'),
+  (1, 'Gipsy Kings', 'Volare', 'gipsy kings|volare'),
+  (1, 'Santana', 'Corazon Espinado', 'santana|corazon espinado'),
+  (1, 'Naiara Azevedo', '50 Reais', 'naiara azevedo|50 reais'),
+  (1, 'Marília Mendonça', 'Supera', 'marilia mendonca|supera'),
+  (1, 'Marília Mendonça', 'Bem Pior Que Eu', 'marilia mendonca|bem pior que eu'),
+  (1, 'Marília Mendonça, Maiara e Maraisa', 'Bebaça', 'marilia mendonca, maiara e maraisa|bebaca'),
+  (1, 'Kaoma', 'Chorando Se Foi', 'kaoma|chorando se foi'),
+  (1, 'Luan Santana', 'Amar Não É Pecado', 'luan santana|amar nao e pecado'),
+  (1, 'Luan Santana', 'Meteoro', 'luan santana|meteoro'),
+  (1, 'Gusttavo Lima, Luis Fonsi', 'Vagabundo', 'gusttavo lima, luis fonsi|vagabundo'),
+  (1, 'Rafaga', 'Mentirosa', 'rafaga|mentirosa'),
+  (1, 'Grupo Extra', 'Me Emborracharé', 'grupo extra|me emborrachare'),
+  (1, 'Los Panchos', 'Besame Mucho', 'los panchos|besame mucho'),
+  (1, 'Los Hermanos', 'Anna Júlia', 'los hermanos|anna julia'),
+  (1, 'Frank Sinatra', 'New York, New York', 'frank sinatra|new york, new york'),
+  (1, 'Teddy Swims', 'Lose Control', 'teddy swims|lose control'),
+  (1, 'Queen', 'The Show Must Go On', 'queen|the show must go on'),
+  (1, 'Queen', 'Bohemian Rhapsody', 'queen|bohemian rhapsody'),
+  (1, 'Queen', 'We Are the Champions', 'queen|we are the champions'),
+  (1, 'Queen', 'Don''t Stop Me Now', 'queen|don''t stop me now'),
+  (1, 'Bon Jovi', 'Livin'' on a Prayer', 'bon jovi|livin'' on a prayer'),
+  (1, 'Bon Jovi', 'It''s My Life', 'bon jovi|it''s my life'),
+  (1, 'Bryan Adams', 'Summer of ''69', 'bryan adams|summer of ''69'),
+  (1, 'Oasis', 'Wonderwall', 'oasis|wonderwall'),
+  (1, 'Neil Diamond', 'Sweet Caroline', 'neil diamond|sweet caroline'),
+  (1, 'The Beatles', 'Hey Jude', 'the beatles|hey jude'),
+  (1, 'Eagles', 'Hotel California', 'eagles|hotel california'),
+  (1, 'Scorpions', 'Still Loving You', 'scorpions|still loving you'),
+  (1, 'a-ha', 'Take on Me', 'a-ha|take on me'),
+  (1, 'The Police', 'Every Breath You Take', 'the police|every breath you take'),
+  (1, 'The Cranberries', 'Zombie', 'the cranberries|zombie'),
+  (1, 'AC/DC', 'Highway to Hell', 'ac/dc|highway to hell'),
+  (1, 'Creedence Clearwater Revival', 'Have You Ever Seen the Rain', 'creedence clearwater revival|have you ever seen the rain'),
+  (1, 'ABBA', 'Dancing Queen', 'abba|dancing queen'),
+  (1, 'ABBA', 'Mamma Mia', 'abba|mamma mia'),
+  (1, 'ABBA', 'Gimme! Gimme! Gimme!', 'abba|gimme! gimme! gimme!'),
+  (1, 'Gloria Gaynor', 'I Will Survive', 'gloria gaynor|i will survive'),
+  (1, 'Madonna', 'Like a Prayer', 'madonna|like a prayer'),
+  (1, 'Cyndi Lauper', 'Girls Just Want to Have Fun', 'cyndi lauper|girls just want to have fun'),
+  (1, 'Whitney Houston', 'I Wanna Dance with Somebody', 'whitney houston|i wanna dance with somebody'),
+  (1, 'Whitney Houston', 'I Will Always Love You', 'whitney houston|i will always love you'),
+  (1, 'Céline Dion', 'My Heart Will Go On', 'celine dion|my heart will go on'),
+  (1, 'Adele', 'Someone Like You', 'adele|someone like you'),
+  (1, 'Adele', 'Rolling in the Deep', 'adele|rolling in the deep'),
+  (1, 'Adele', 'Hello', 'adele|hello'),
+  (1, 'Elvis Presley', 'Can''t Help Falling in Love', 'elvis presley|can''t help falling in love'),
+  (1, 'Ben E. King', 'Stand by Me', 'ben e. king|stand by me'),
+  (1, 'Radiohead', 'Creep', 'radiohead|creep'),
+  (1, 'The Black Eyed Peas', 'I Gotta Feeling', 'the black eyed peas|i gotta feeling'),
+  (1, 'Lady Gaga e Bradley Cooper', 'Shallow', 'lady gaga e bradley cooper|shallow'),
+  (1, 'Michael Jackson', 'Thriller', 'michael jackson|thriller'),
+  (1, 'Michael Jackson', 'Billie Jean', 'michael jackson|billie jean'),
+  (1, 'Michael Jackson', 'Beat It', 'michael jackson|beat it'),
+  (1, 'Bruno Mars', 'Just the Way You Are', 'bruno mars|just the way you are'),
+  (1, 'Amy Winehouse', 'Valerie', 'amy winehouse|valerie'),
+  (1, 'Amy Winehouse', 'Back to Black', 'amy winehouse|back to black');

@@ -30,6 +30,8 @@ model Night {
   currentId    Int? // atuação "a cantar agora"
   votingEndsAt DateTime? // fecho automático da votação (opcional)
   maxSignups   Int? // máximo de inscrições (null = sem limite)
+  songListId   Int? // lista de músicas da noite (null = música escrita à mão)
+  songList     SongList?     @relation(fields: [songListId], references: [id], onDelete: SetNull)
   createdAt    DateTime      @default(now())
   performances Performance[]
   votes        Vote[]
@@ -37,12 +39,13 @@ model Night {
 
 // Concorrente identificado pelo telefone (agrupa a classificação mensal)
 model Contestant {
-  id           Int           @id @default(autoincrement())
-  phone        String        @unique
-  name         String
-  age          Int
-  createdAt    DateTime      @default(now())
-  performances Performance[]
+  id             Int                 @id @default(autoincrement())
+  phone          String              @unique
+  name           String
+  age            Int
+  createdAt      DateTime            @default(now())
+  performances   Performance[]
+  participations PerformanceMember[]
 }
 
 // status: QUEUED | DONE | SKIPPED
@@ -65,7 +68,8 @@ model Performance {
   points       Int        @default(0)
   voteCount    Int        @default(0)
 
-  @@unique([nightId, contestantId])
+  members PerformanceMember[]
+
   @@unique([nightId, position])
 }
 
@@ -88,12 +92,12 @@ model Vote {
 
 // Branding (linha única, id = 1)
 model Settings {
-  id        Int      @id @default(1)
-  brandName String   @default("Karaoke")
-  logoMime  String?
-  logo      Bytes?
-  menuEnabled Boolean @default(true)
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(1)
+  brandName   String   @default("Karaoke")
+  logoMime    String?
+  logo        Bytes?
+  menuEnabled Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
 }
 
 // Menu do estabelecimento (bebidas, comida, ...)
@@ -113,4 +117,43 @@ model MenuItem {
   priceCents  Int
   available   Boolean      @default(true)
   position    Int
+}
+
+// Dados de cada concorrente no momento da inscrição.
+model PerformanceMember {
+  performanceId Int
+  performance   Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  contestantId  Int
+  contestant    Contestant  @relation(fields: [contestantId], references: [id])
+  name          String
+  age           Int
+  phone         String
+  position      Int
+
+  @@id([performanceId, contestantId])
+  @@unique([performanceId, position])
+}
+
+// Lista de músicas (catálogo). Cada noite usa uma; `isDefault` é a sugerida ao abrir.
+model SongList {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  songs     Song[]
+  nights    Night[]
+}
+
+// Música de uma lista. `key` normaliza artista + título (sem acentos/maiúsculas)
+// para evitar repetidas na mesma lista.
+model Song {
+  id        Int      @id @default(autoincrement())
+  listId    Int
+  list      SongList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  artist    String
+  title     String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([listId, key])
 }

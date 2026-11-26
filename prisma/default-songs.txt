@@ -1,0 +1,137 @@
+# Lista de músicas por defeito (formato: Música - Artista).
+# Os títulos de secção em maiúsculas são ignorados na importação.
+PORTUGUESAS
+A Minha Casinha - Xutos & Pontapés
+Homem do Leme - Xutos & Pontapés
+Não Sou o Único - Xutos & Pontapés
+Para Mim Tanto Me Faz - D’ZRT
+Pica do 7 - António Zambujo
+Porto Côvo - Rui Veloso
+Paixão - Rui Veloso
+Perfume - Intervalo
+Anda Comigo Ver os Aviões - Os Azeitonas
+Pôr do Sol - Vizinhos
+Amiga da Minha Mulher - Seu Jorge
+Canção de Engate - António Variações
+Playback - Carlos Paião
+Jardins Proibidos - Paulo Gonzo
+Os Maridos das Outras - Miguel Araújo
+Amar Pelos Dois - Salvador Sobral
+Desfado - Ana Moura
+Chamar a Música - Sara Tavares
+Longe do Mundo - Sara Tavares
+Há Dias Assim - Filipa Azevedo
+Conquistador - Da Vinci
+Canção do Mar - Dulce Pontes
+Amanhã de manhã - Doce
+Comunhão de Bens - Ágata
+Comi-lhe o Melão - Saúl
+Papel Principal - Adelaide Ferreira
+Mal Acostumado - Kara
+Afinal Havia Outra - Mónica Sintra
+Cinderela - Carlos Paião
+Ó malhão malhão
+Eu Tenho Dois Amores - Marco Paulo
+Sempre Que Brilha o Sol - Marco Paulo
+Coração Não Tem Idade - Toy
+A Cabritinha - Quim Barreiros
+A Garagem da Vizinha - Quim Barreiros
+Mestre de Culinária - Quim Barreiros
+Baile de Verão - José Malhoa
+Morena Kuduro - José Malhoa
+Ai Mexe Mexe Que É Bom - José Malhoa
+Apita o Comboio - música popular portuguesa
+Perfume de Mulher - Ágata
+A Vida Toda - Carolina Deslandes
+Perfume - Calema
+Tal Como Sou - Fernando Daniel
+Como Antes - Matias Damásio
+Amor de Água Fresca - Dina
+Memórias Esquecidas - Beto
+Ai Destino - Tony Carreira
+Sonhos de Menino - Tony Carreira
+Sonhador, Sonhador - Tony Carreira
+Este Sabor a Ti - Tony Carreira
+Marian Tcha Tcha Tcha - Bandalusa
+Se A Casa Cair - Bandalusa
+Baby És Uma Bomba - Emanuel
+Hino À Alegria - Emanuel
+Ó Senhor Guarda - Emanuel
+Longe de Ti - Império dos Sentados
+
+BRASILEIRAS E LATINAS
+Ai Se Eu Te Pego - Michel Teló
+Tchê Tcherere Tchê Tchê - Gusttavo Lima
+Camaro Amarelo - Munhoz e Mariano
+Maus Bocados - Cristiano Araújo
+Bailando - Enrique Iglesias
+Show das Poderosas - Anitta
+Despacito - Luis Fonsi e Daddy Yankee
+Livin' la Vida Loca - Ricky Martin
+Macarena - Los Del Río
+Waka Waka - Shakira
+Vivir Mi Vida - Marc Anthony
+La Camisa Negra - Juanes
+Bamboleo - Gipsy Kings
+Volare - Gipsy Kings
+Corazon Espinado - Santana
+50 Reais - Naiara Azevedo
+Supera - Marília Mendonça
+Bem Pior Que Eu - Marília Mendonça
+Bebaça - Marília Mendonça, Maiara e Maraisa
+Chorando Se Foi - Kaoma
+Amar Não É Pecado - Luan Santana
+Meteoro - Luan Santana
+Vagabundo - Gusttavo Lima, Luis Fonsi
+Mentirosa - Rafaga
+Me Emborracharé - Grupo Extra
+Besame Mucho - Los Panchos
+Anna Júlia - Los Hermanos
+
+INTERNACIONAIS - CLÁSSICOS E ROCK
+New York, New York - Frank Sinatra
+Lose Control - Teddy Swims
+The Show Must Go On - Queen
+Bohemian Rhapsody - Queen
+We Are the Champions - Queen
+Don't Stop Me Now - Queen
+Livin' on a Prayer - Bon Jovi
+It's My Life - Bon Jovi
+Summer of '69 - Bryan Adams
+Wonderwall - Oasis
+Sweet Caroline - Neil Diamond
+Hey Jude - The Beatles
+Hotel California - Eagles
+Still Loving You - Scorpions
+Take on Me - a-ha
+Every Breath You Take - The Police
+Zombie - The Cranberries
+Highway to Hell - AC/DC
+Have You Ever Seen the Rain - Creedence Clearwater Revival
+
+POP e BALADAS
+Dancing Queen - ABBA
+Mamma Mia - ABBA
+Gimme! Gimme! Gimme! - ABBA
+I Will Survive - Gloria Gaynor
+Like a Prayer - Madonna
+Girls Just Want to Have Fun - Cyndi Lauper
+I Wanna Dance with Somebody - Whitney Houston
+I Will Always Love You - Whitney Houston
+My Heart Will Go On - Céline Dion
+Someone Like You - Adele
+Rolling in the Deep - Adele
+Hello - Adele
+Can't Help Falling in Love - Elvis Presley
+Stand by Me - Ben E. King
+Creep - Radiohead
+
+HITS
+I Gotta Feeling - The Black Eyed Peas
+Shallow - Lady Gaga e Bradley Cooper
+Thriller - Michael Jackson
+Billie Jean - Michael Jackson
+Beat It - Michael Jackson
+Just the Way You Are - Bruno Mars
+Valerie - Amy Winehouse
+Back to Black - Amy Winehouse

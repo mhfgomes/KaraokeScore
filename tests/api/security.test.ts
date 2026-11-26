@@ -11,6 +11,10 @@ describe("acesso e segurança", () => {
     expect((await call("/api/admin/night", { action: "open" })).status).toBe(401);
     expect((await call("/api/admin/night")).status).toBe(401);
     expect((await call("/api/admin/users", { username: "x", password: "y".repeat(10) })).status).toBe(401);
+    expect((await call("/api/admin/contestants")).status).toBe(401);
+    expect((await call("/api/admin/nights")).status).toBe(401);
+    expect((await call("/api/admin/songs", { action: "add", title: "X" })).status).toBe(401);
+    expect((await call("/api/admin/nights", { action: "delete", id: 1 })).status).toBe(401);
   });
 
   it("login com password errada falha", async () => {
