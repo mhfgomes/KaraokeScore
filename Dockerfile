@@ -3,7 +3,7 @@
 #   docker buildx build --platform linux/amd64,linux/arm64 -t karaokescore .
 
 ARG NODE_VERSION=24
-ARG BUN_VERSION=1.4.3
+ARG BUN_VERSION=1.4.5
 
 # --- Dependências + build (bun instala, Node compila) ---
 FROM oven/bun:${BUN_VERSION}-slim AS bun

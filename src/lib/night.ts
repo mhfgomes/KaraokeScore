@@ -3,6 +3,7 @@ import { prisma } from "./db";
 import { fail, HttpError } from "./http";
 import { notifyUpdate } from "./events";
 import { competitionRank, pointsFor } from "./scoring";
+import { resolveSongList } from "./songs";
 import { VOTING_DURATIONS } from "./types";
 
 export type NightStatus = "REGISTRATION" | "VOTING" | "CLOSED";
@@ -35,11 +36,29 @@ export async function requireActiveNight(status?: NightStatus, tx: Tx = prisma) 
   return night;
 }
 
-export async function openNight() {
+/** Valida uma data AAAA-MM-DD (tem de existir no calendário). */
+export function parseNightDate(raw: unknown) {
+  const date = typeof raw === "string" ? raw.trim() : "";
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(`${date}T00:00:00Z`) : null;
+  if (!parsed || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) fail(400, "Data inválida.");
+  return date;
+}
+
+function parseMaxSignups(max: number | null) {
+  if (max !== null && (!Number.isInteger(max) || max < 1 || max > 999)) fail(400, "Máximo de inscrições inválido.");
+  return max;
+}
+
+/**
+ * Abre uma noite nova (por defeito com a data de hoje). Só pode haver uma
+ * aberta. Sem `songListId`, usa a lista de músicas se só existir uma.
+ */
+export async function openNight(date: string = today(), maxSignups: number | null = null, songListId?: number | null) {
+  parseMaxSignups(maxSignups);
   const night = await prisma.$transaction(async (tx) => {
     const active = await tx.night.findFirst({ where: { status: { not: "CLOSED" } } });
     if (active) fail(409, "Já existe uma noite aberta.");
-    return tx.night.create({ data: { date: today() } });
+    return tx.night.create({ data: { date, maxSignups, songListId: await resolveSongList(songListId, tx) } });
   });
   notifyUpdate();
   return night;
@@ -94,7 +113,7 @@ export async function startVoting(minutes?: number | null) {
       fail(409, `Ainda há ${pending} por cantar. Marca quem faltar como "Não compareceu".`);
     }
     const votable = await tx.performance.count({ where: { nightId: night.id, status: "DONE" } });
-    if (votable === 0) fail(409, "Não há concorrentes para votar.");
+    if (votable === 0) fail(409, "Não há concorrentes para votar. Se a noite não se realizar, cancela-a.");
     await tx.night.update({ where: { id: night.id }, data: { status: "VOTING", currentId: null, votingEndsAt } });
   });
   scheduleAutoClose(votingEndsAt);
@@ -177,18 +196,26 @@ export async function setPerformanceStatus(performanceId: number, status: "QUEUE
 export async function monthlyRanking(month: string) {
   const performances = await prisma.performance.findMany({
     where: { night: { status: "CLOSED", date: { startsWith: month } }, status: { not: "SKIPPED" } },
-    include: { night: { select: { date: true } } },
+    include: { members: true },
     orderBy: { id: "asc" },
   });
   const byContestant = new Map<number, { name: string; points: number; firsts: number; votes: number; nights: number }>();
+  const seenNights = new Map<number, Set<number>>();
   for (const p of performances) {
-    const row = byContestant.get(p.contestantId) ?? { name: p.name, points: 0, firsts: 0, votes: 0, nights: 0 };
-    row.name = p.name; // nome mais recente
-    row.points += p.points;
-    row.firsts += p.rank === 1 && p.voteCount > 0 ? 1 : 0;
-    row.votes += p.voteCount;
-    row.nights += 1;
-    byContestant.set(p.contestantId, row);
+    // O fallback cobre atuações criadas por ferramentas antigas.
+    const members = p.members.length ? p.members : [{ contestantId: p.contestantId, name: p.name }];
+    for (const member of members) {
+      const row = byContestant.get(member.contestantId) ?? { name: member.name, points: 0, firsts: 0, votes: 0, nights: 0 };
+      row.name = member.name;
+      row.points += p.points;
+      row.firsts += p.rank === 1 && p.voteCount > 0 ? 1 : 0;
+      row.votes += p.voteCount;
+      const nights = seenNights.get(member.contestantId) ?? new Set<number>();
+      nights.add(p.nightId);
+      seenNights.set(member.contestantId, nights);
+      row.nights = nights.size;
+      byContestant.set(member.contestantId, row);
+    }
   }
   return competitionRank(
     [...byContestant.values()],
@@ -198,8 +225,40 @@ export async function monthlyRanking(month: string) {
 
 /** Define o máximo de inscrições da noite ativa (null = sem limite). */
 export async function setMaxSignups(max: number | null) {
-  if (max !== null && (!Number.isInteger(max) || max < 1 || max > 999)) fail(400, "Máximo de inscrições inválido.");
+  parseMaxSignups(max);
   const night = await requireActiveNight();
   await prisma.night.update({ where: { id: night.id }, data: { maxSignups: max } });
+  notifyUpdate();
+}
+
+/** Edita a data e, se a noite ainda não fechou, o máximo de inscrições e a lista de músicas. */
+export async function updateNight(id: number, data: { date?: string; maxSignups?: number | null; songListId?: number | null }) {
+  if (data.maxSignups !== undefined) parseMaxSignups(data.maxSignups);
+  await prisma.$transaction(async (tx) => {
+    const night = await tx.night.findUnique({ where: { id } });
+    if (!night) fail(404, "Noite não encontrada.");
+    if ((data.maxSignups !== undefined || data.songListId !== undefined) && night.status === "CLOSED") fail(409, "A noite já terminou.");
+    if (data.songListId != null && !(await tx.songList.findUnique({ where: { id: data.songListId } }))) {
+      fail(404, "Lista de músicas não encontrada.");
+    }
+    await tx.night.update({ where: { id }, data });
+  });
+  notifyUpdate();
+}
+
+/** Cancela a noite aberta: é apagada com as inscrições e os votos (os concorrentes mantêm-se). */
+export async function cancelNight() {
+  await prisma.$transaction(async (tx) => {
+    const night = await requireActiveNight(undefined, tx);
+    await tx.night.delete({ where: { id: night.id } });
+  });
+  scheduleAutoClose(null);
+  notifyUpdate();
+}
+
+/** Apaga uma noite com as atuações e os votos (os concorrentes mantêm-se). */
+export async function deleteNight(id: number) {
+  const night = await prisma.night.delete({ where: { id } });
+  if (night.status === "VOTING") scheduleAutoClose(null);
   notifyUpdate();
 }

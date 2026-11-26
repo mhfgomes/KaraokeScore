@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Mic, Star, Trophy, UtensilsCrossed } from "lucide-react";
+import { ListMusic, Mic, Star, Trophy, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Brand } from "@/components/Brand";
@@ -29,6 +29,13 @@ export default function Home() {
         <Button asChild size="lg" className="h-16 text-xl">
           <Link href="/registo">
             <Mic /> Inscrever-me
+          </Link>
+        </Button>
+      )}
+      {night?.status === "REGISTRATION" && night.songListName && (
+        <Button asChild variant="outline" size="lg" className="h-12">
+          <Link href="/musicas">
+            <ListMusic /> Lista de músicas
           </Link>
         </Button>
       )}

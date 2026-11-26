@@ -46,6 +46,11 @@ export async function getPublicState(deviceId?: string) {
       .sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999));
   }
 
+  // Lista de músicas da noite (só se tiver músicas; senão a música é escrita à mão)
+  const songList = night.songListId
+    ? await prisma.songList.findUnique({ where: { id: night.songListId }, select: { name: true, _count: { select: { songs: true } } } })
+    : null;
+
   const hasVoted = deviceId
     ? (await prisma.vote.count({ where: { nightId: night.id, deviceId } })) > 0
     : false;
@@ -62,6 +67,7 @@ export async function getPublicState(deviceId?: string) {
       votingEndsAt: night.votingEndsAt?.toISOString() ?? null,
       maxSignups: night.maxSignups,
       signups: active.length,
+      songListName: songList?._count.songs ? songList.name : null,
     },
     queue,
     voting,

@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { KeyRound, Minus, Plus, LogOut, Mic, UtensilsCrossed, Monitor, SkipForward, Timer, Trophy, UserX, Undo2 } from "lucide-react";
+import { Ban, CalendarDays, KeyRound, Music, Users, Minus, Plus, LogOut, Mic, UtensilsCrossed, Monitor, SkipForward, Timer, Trophy, UserX, Undo2 } from "lucide-react";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { Countdown } from "@/components/Countdown";
+import { OpenNightButton } from "@/components/OpenNightButton";
 import { postJson, useLatest, useLiveState } from "@/components/useLiveState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,11 +27,12 @@ type AdminPerformance = {
   status: "QUEUED" | "DONE" | "SKIPPED";
   phone: string;
   age: number;
+  contestants: { name: string; age: number; phone: string }[];
   votes: number;
   rank: number | null;
   points: number;
 };
-type AdminNight = { id: number; date: string; status: keyof typeof STATUS_LABEL; currentId: number | null; votingEndsAt: string | null; maxSignups: number | null };
+type AdminNight = { id: number; date: string; status: keyof typeof STATUS_LABEL; currentId: number | null; votingEndsAt: string | null; maxSignups: number | null; songListName: string | null };
 
 export default function AdminPage() {
   const [admin, setAdmin] = useState<{ username: string } | null | undefined>(undefined);
@@ -156,6 +158,21 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
+            <Link href="/admin/noites">
+              <CalendarDays /> Noites
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/musicas">
+              <Music /> Músicas
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/concorrentes">
+              <Users /> Concorrentes
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
             <Link href="/admin/menu">
               <UtensilsCrossed /> Menu
             </Link>
@@ -187,11 +204,12 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
               <p className="text-sm text-muted-foreground">
                 {perfs.filter((p) => p.status !== "SKIPPED").length}
                 {night.maxSignups ? ` / ${night.maxSignups}` : ""} concorrentes · {totalVotes} votos
+                {active && ` · Músicas: ${night.songListName ?? "texto livre"}`}
               </p>
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            {!active && <Button disabled={busy} onClick={() => nightAction("open")}>Abrir nova noite</Button>}
+            {!active && <OpenNightButton disabled={busy} onOpen={(songListId) => nightAction("open", { songListId })} />}
             {night?.status === "REGISTRATION" && (
               <>
                 <form
@@ -285,6 +303,23 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
                 Fechar votação
               </ConfirmButton>
             )}
+            {active && (
+              <ConfirmButton
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+                title="Cancelar esta noite?"
+                description={(() => {
+                  const signups = perfs.length;
+                  const lost = [signups && `${signups} ${signups === 1 ? "inscrição" : "inscrições"}`, totalVotes && `${totalVotes} ${totalVotes === 1 ? "voto" : "votos"}`].filter(Boolean);
+                  return `A noite é apagada${lost.length ? `, com ${lost.join(" e ")}` : ""}, e não conta para a classificação. Os concorrentes continuam registados. Esta ação não pode ser desfeita.`;
+                })()}
+                confirmLabel="Cancelar noite"
+                disabled={busy}
+                onConfirm={() => nightAction("cancel")}
+              >
+                <Ban /> Cancelar noite
+              </ConfirmButton>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -315,8 +350,8 @@ function Panel({ username, onLogout }: { username: string; onLogout: () => void 
                   <TableRow key={p.id} className={cn(p.status === "SKIPPED" && "opacity-40", isCurrent && "bg-primary/10")}>
                     <TableCell className="px-3 text-muted-foreground">{p.position}</TableCell>
                     <TableCell className="px-3 font-semibold">{p.name}</TableCell>
-                    <TableCell className="px-3">{p.age}</TableCell>
-                    <TableCell className="px-3">{p.phone}</TableCell>
+                    <TableCell className="px-3">{p.contestants.map((c, i) => <div key={i}>{c.age}</div>)}</TableCell>
+                    <TableCell className="px-3">{p.contestants.map((c, i) => <div key={i} title={c.name}>{c.phone}</div>)}</TableCell>
                     <TableCell className="px-3">{p.song}</TableCell>
                     <TableCell className="max-w-48 truncate px-3 text-muted-foreground" title={p.notes ?? ""}>
                       {p.notes}
